@@ -5,8 +5,14 @@
     "description": "Contacts API",
     "version": "1.0.0"
   },
-  "host": "localhost:8080",
+  "host": "localhost:3000",
   "basePath": "/",
+  "tags": [
+    {
+      "name": "Contacts",
+      "description": "Operations for contacts"
+    }
+  ],
   "schemes": [
     "http"
   ],
@@ -157,6 +163,63 @@
           }
         }
       }
+    }
+  },
+  "definitions": {
+    "Contact": {
+      "type": "object",
+      "properties": {
+        "firstName": {
+          "type": "string",
+          "example": "Arturo"
+        },
+        "lastName": {
+          "type": "string",
+          "example": "Ocampo"
+        },
+        "email": {
+          "type": "string",
+          "example": "arturo@example.com"
+        },
+        "favoriteColor": {
+          "type": "string",
+          "example": "Blue"
+        },
+        "birthday": {
+          "type": "string",
+          "example": "1990-05-20"
+        }
+      }
+    },
+    "ContactInput": {
+      "type": "object",
+      "properties": {
+        "firstName": {
+          "type": "string",
+          "example": "Arturo"
+        },
+        "lastName": {
+          "type": "string",
+          "example": "Ocampo"
+        },
+        "email": {
+          "type": "string",
+          "example": "arturo@example.com"
+        },
+        "favoriteColor": {
+          "type": "string",
+          "example": "Blue"
+        },
+        "birthday": {
+          "type": "string",
+          "example": "1990-05-20"
+        }
+      },
+      "required": [
+        "firstName",
+        "lastName",
+        "email"
+      ]
     }
   }
 }
