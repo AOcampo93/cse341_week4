@@ -9,32 +9,54 @@ const rawSpec = require('./swagger.json');
 const port = process.env.PORT || 8080;
 const app = express();
 
+// IMPORTANT: para que req.protocol refleje 'https' detrás del proxy de Render
+app.enable('trust proxy');
+
 /* ---------- Middlewares globales ---------- */
-app.use(express.json()); // reemplaza body-parser.json()
-app.use(cors({
-  origin: true, // puedes restringir a ['https://TU-APP.onrender.com']
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
+app.use(express.json());
+app.use(
+  cors({
+    origin: true, // puedes restringir a ['https://TU-APP.onrender.com']
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+  })
+);
 app.options('*', cors()); // responde preflights
 
-/* ---------- Swagger UI con spec dinámico ---------- */
-// servir assets de Swagger UI
+/* ---------- Swagger UI con host/esquema dinámicos ---------- */
+// 1) servir assets de Swagger UI
 app.use('/api-docs', swaggerUi.serve);
 
-// ajustar host/esquema según la request (Render vs local)
+// 2) ajustar host/esquema según la request (Render vs local)
 app.use('/api-docs', (req, res, next) => {
-  const spec = JSON.parse(JSON.stringify(rawSpec)); 
-  spec.host = req.get('host');      
-  spec.schemes = [req.protocol];    
+  const spec = JSON.parse(JSON.stringify(rawSpec)); // clonar para no mutar el import
+  const host = req.get('host');
+
+  // Render envía x-forwarded-proto = 'https'
+  const forwardedProto = (req.headers['x-forwarded-proto'] || '').split(',')[0];
+  const protoRaw = forwardedProto || req.protocol || 'https';
+
+  // Si por cualquier motivo llega 'http' en Render, forzamos https
+  const proto =
+    protoRaw === 'http' && host && host.endsWith('onrender.com') ? 'https' : protoRaw;
+
+  spec.host = host;          // p.ej. cse341-week4-xxxx.onrender.com
+  spec.schemes = [proto];    // https en Render, http en local
+
   return swaggerUi.setup(spec)(req, res, next);
 });
 
-// (Opcional) Ver el JSON ya ajustado
+// (Opcional) Exponer el JSON ya ajustado para verificación
 app.get('/api-docs.json', (req, res) => {
   const spec = JSON.parse(JSON.stringify(rawSpec));
-  spec.host = req.get('host');
-  spec.schemes = [req.protocol];
+  const host = req.get('host');
+  const forwardedProto = (req.headers['x-forwarded-proto'] || '').split(',')[0];
+  const protoRaw = forwardedProto || req.protocol || 'https';
+  const proto =
+    protoRaw === 'http' && host && host.endsWith('onrender.com') ? 'https' : protoRaw;
+
+  spec.host = host;
+  spec.schemes = [proto];
   res.json(spec);
 });
 
