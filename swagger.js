@@ -1,21 +1,22 @@
+// swagger.js
 const swaggerAutogen = require('swagger-autogen')();
+
+const isProd = process.env.NODE_ENV === 'production';
 
 const doc = {
   info: {
     title: 'CSE341 API - Week 4',
     description: 'Contacts API'
   },
-  host: 'https://cse341-week4-4b58.onrender.com/api-docs',
-  schemes: ['https']
+  host: isProd ? 'cse341-week4-4b58.onrender.com' : 'localhost:8080',
+  schemes: [isProd ? 'https' : 'http'],
+  basePath: '/',
+  consumes: ['application/json'],
+  produces: ['application/json']
 };
 
 const outputFile = './swagger.json';
 const endpointsFiles = ['./routes/index.js'];
 
-// generate swagger.json
+// Genera swagger.json
 swaggerAutogen(outputFile, endpointsFiles, doc);
-
-// Run server after it gets generated
-// swaggerAutogen(outputFile, endpointsFiles, doc).then(async () => {
-//   await import('./index.js');
-// });

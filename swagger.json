@@ -5,10 +5,16 @@
     "description": "Contacts API",
     "version": "1.0.0"
   },
-  "host": "https://cse341-week4-4b58.onrender.com/api-docs",
+  "host": "localhost:8080",
   "basePath": "/",
   "schemes": [
-    "https"
+    "http"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
   ],
   "paths": {
     "/api-docs": {
