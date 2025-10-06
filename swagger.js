@@ -5,8 +5,8 @@ const doc = {
     title: 'CSE341 API - Week 4',
     description: 'Contacts API'
   },
-  host: 'localhost:8080',
-  schemes: ['http']
+  host: 'https://cse341-week4-4b58.onrender.com/api-docs',
+  schemes: ['https']
 };
 
 const outputFile = './swagger.json';
